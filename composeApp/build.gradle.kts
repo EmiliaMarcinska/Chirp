@@ -57,11 +57,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.plcoding.chirp"
+    namespace = "com.emarc.chirp"
     compileSdk = libs.versions.projectCompileSdkVersion.get().toInt()
 
     defaultConfig {
-        applicationId = "com.plcoding.chirp"
+        applicationId = "com.emarc.chirp"
         minSdk = libs.versions.projectMinSdkVersion.get().toInt()
         targetSdk = libs.versions.projectTargetSdkVersion.get().toInt()
         versionCode = 1
@@ -89,11 +89,11 @@ dependencies {
 
 compose.desktop {
     application {
-        mainClass = "com.plcoding.chirp.MainKt"
+        mainClass = "com.emarc.chirp.MainKt"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.plcoding.chirp"
+            packageName = "com.emarc.chirp"
             packageVersion = "1.0.0"
         }
     }
