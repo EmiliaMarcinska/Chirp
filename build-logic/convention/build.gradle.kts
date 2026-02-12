@@ -34,8 +34,12 @@ tasks {
 gradlePlugin {
     plugins {
         register("androidApplication") {
-            id = "com.emarc.chirp.convention.android.application"
+            id = "com.emarc.convention.android.application"
             implementationClass = "AndroidApplicationConventionPlugin"
+        }
+        register("androidComposeApplication") {
+            id = "com.emarc.convention.android.application.compose"
+            implementationClass = "AndroidApplicationComposeConventionPlugin"
         }
     }
 }
