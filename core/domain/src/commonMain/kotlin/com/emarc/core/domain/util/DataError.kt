@@ -1,7 +1,7 @@
 package com.emarc.core.domain.util
 
-sealed interface DataError : Error {
-    enum class Remote : DataError {
+sealed interface DataError: Error {
+    enum class Remote: DataError {
         BAD_REQUEST,
         REQUEST_TIMEOUT,
         UNAUTHORIZED,
@@ -13,13 +13,13 @@ sealed interface DataError : Error {
         PAYLOAD_TOO_LARGE,
         SERVER_ERROR,
         SERVICE_UNAVAILABLE,
-        SERIALIZATION_ERROR,
-        UNKNOW
+        SERIALIZATION,
+        UNKNOWN
     }
 
-    enum class Local : DataError {
+    enum class Local: DataError {
         DISK_FULL,
         NOT_FOUND,
-        UNKNOW
+        UNKNOWN
     }
 }
