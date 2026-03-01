@@ -2,6 +2,7 @@ package com.emarc.chirp
 
 import androidx.compose.runtime.Composable
 import com.emarc.auth.presentation.register_success.RegisterSuccessRoot
+import com.emarc.chirp.navigation.NavigationRoot
 import com.emarc.core.designsystem.theme.ChirpTheme
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -9,7 +10,6 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App() {
     ChirpTheme {
-        RegisterSuccessRoot(
-        )
+        NavigationRoot()
     }
 }

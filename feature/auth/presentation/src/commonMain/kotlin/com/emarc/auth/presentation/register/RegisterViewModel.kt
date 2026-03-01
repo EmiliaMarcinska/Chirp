@@ -29,9 +29,9 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class RegisterViewModel (
+class RegisterViewModel(
     private val authService: AuthService
-): ViewModel() {
+) : ViewModel() {
 
     private val eventChannel = Channel<RegisterEvent>()
     val events = eventChannel.receiveAsFlow()
@@ -43,7 +43,6 @@ class RegisterViewModel (
         .onStart {
             if (!hasLoadedInitialData) {
                 observeValidationStates()
-                /** Load initial data here **/
                 hasLoadedInitialData = true
             }
         }
@@ -66,7 +65,7 @@ class RegisterViewModel (
         .distinctUntilChanged()
 
     private val isRegisteringFlow = state
-        .map{ it.isRegistering }
+        .map { it.isRegistering }
         .distinctUntilChanged()
 
     private fun observeValidationStates() {
@@ -74,41 +73,38 @@ class RegisterViewModel (
             isEmailValidFlow,
             isUsernameValidFlow,
             isPasswordValidFlow,
-                isRegisteringFlow
-        ) { isEmailValid, isUserValid, isPasswordValid, isRegistering ->
-            val allValid = isEmailValid && isUserValid && isPasswordValid
-
+            isRegisteringFlow
+        ) { isEmailValid, isUsernameValid, isPasswordValid, isRegistering ->
+            val allValid = isEmailValid && isUsernameValid && isPasswordValid
             _state.update { it.copy(
                 canRegister = !isRegistering && allValid
             ) }
         }.launchIn(viewModelScope)
     }
 
-
     fun onAction(action: RegisterAction) {
         when (action) {
             RegisterAction.OnLoginClick -> Unit
             RegisterAction.OnRegisterClick -> register()
             RegisterAction.OnTogglePasswordVisibilityClick -> {
-                _state.update {
-                    it.copy(
-                        isPasswordVisible = !it.isPasswordVisible
-                    )
-                }
+                _state.update { it.copy(
+                    isPasswordVisible = !it.isPasswordVisible
+                ) }
             }
             else -> Unit
         }
     }
 
     private fun register() {
-        if (!validateFormInputs()) return
+        if (!validateFormInputs()) {
+            return
+        }
 
         viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    isRegistering = true,
-                )
-            }
+            _state.update { it.copy(
+                isRegistering = true,
+            ) }
+
             val email = state.value.emailTextState.text.toString()
             val username = state.value.usernameTextState.text.toString()
             val password = state.value.passwordTextState.text.toString()
@@ -120,34 +116,33 @@ class RegisterViewModel (
                     password = password
                 )
                 .onSuccess {
-                    _state.update {
-                        it.copy(
-                            isRegistering = false,
-                        )
-                    }
+                    _state.update { it.copy(
+                        isRegistering = false,
+                    ) }
+                    eventChannel.send(RegisterEvent.Success(email))
                 }
                 .onFailure { error ->
-                    val registrationError = when (error) {
+                    val registrationError = when(error) {
                         DataError.Remote.CONFLICT -> UiText.Resource(Res.string.error_account_exists)
                         else -> error.toUiText()
                     }
-                    _state.update {
-                        it.copy(
-                            isRegistering = false,
-                            registrationError = registrationError
-                        )
-                    }
+                    _state.update { it.copy(
+                        isRegistering = false,
+                        registrationError = registrationError,
+                    ) }
                 }
         }
     }
 
     private fun clearAllTextFieldErrors() {
-        _state.update { it.copy(
-            emailError = null,
-            usernameError = null,
-            passwordError = null,
-            registrationError = null
-        ) }
+        _state.update {
+            it.copy(
+                emailError = null,
+                usernameError = null,
+                passwordError = null,
+                registrationError = null
+            )
+        }
     }
 
     private fun validateFormInputs(): Boolean {
@@ -162,21 +157,23 @@ class RegisterViewModel (
         val passwordValidationState = PasswordValidator.validate(password)
         val isUsernameValid = username.length in 3..20
 
-        val emailError = if(!isEmailValid) {
+        val emailError = if (!isEmailValid) {
             UiText.Resource(Res.string.error_invalid_email)
         } else null
-        val usernameError = if(!isUsernameValid) {
+        val usernameError = if (!isUsernameValid) {
             UiText.Resource(Res.string.error_invalid_username)
         } else null
-        val passwordError = if(!passwordValidationState.isValidPassword) {
+        val passwordError = if (!passwordValidationState.isValidPassword) {
             UiText.Resource(Res.string.error_invalid_password)
         } else null
 
-        _state.update { it.copy(
-            emailError = emailError,
-            usernameError = usernameError,
-            passwordError = passwordError
-        ) }
+        _state.update {
+            it.copy(
+                emailError = emailError,
+                usernameError = usernameError,
+                passwordError = passwordError
+            )
+        }
 
         return isUsernameValid && isEmailValid && passwordValidationState.isValidPassword
     }
