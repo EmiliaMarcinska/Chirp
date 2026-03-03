@@ -17,7 +17,7 @@ import com.emarc.core.designsystem.components.brand.ChirpSuccessIcon
 import com.emarc.core.designsystem.components.buttons.ChirpButton
 import com.emarc.core.designsystem.components.buttons.ChirpButtonStyle
 import com.emarc.core.designsystem.components.layouts.ChirpAdaptiveResultLayout
-import com.emarc.core.designsystem.components.layouts.ChirpSimpleSuccessLayout
+import com.emarc.core.designsystem.components.layouts.ChirpSimpleResultLayout
 import com.emarc.core.designsystem.components.layouts.ChirpSnackbarScaffold
 import com.emarc.core.designsystem.theme.ChirpTheme
 import com.emarc.core.presentation.util.ObserveAsEvents
@@ -35,7 +35,7 @@ fun RegisterSuccessRoot(
     val snackbarHostState = remember { SnackbarHostState() }
 
     ObserveAsEvents(viewModel.events) { event ->
-        when(event) {
+        when (event) {
             is RegisterSuccessEvent.ResendVerificationEmailSuccess -> {
                 snackbarHostState.showSnackbar(
                     message = getString(
@@ -63,7 +63,7 @@ fun RegisterSuccessScreen(
         snackbarHostState = snackbarHostState
     ) {
         ChirpAdaptiveResultLayout {
-            ChirpSimpleSuccessLayout(
+            ChirpSimpleResultLayout(
                 title = stringResource(Res.string.account_successfully_created),
                 description = stringResource(
                     Res.string.verification_email_sent_to_x,
