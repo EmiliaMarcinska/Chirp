@@ -35,7 +35,7 @@ fun RegisterSuccessRoot(
     val snackbarHostState = remember { SnackbarHostState() }
 
     ObserveAsEvents(viewModel.events) { event ->
-        when (event) {
+        when(event) {
             is RegisterSuccessEvent.ResendVerificationEmailSuccess -> {
                 snackbarHostState.showSnackbar(
                     message = getString(
