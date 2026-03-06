@@ -1,17 +1,38 @@
 package com.emarc.core.data.auth
 
+import com.emarc.core.data.dto.AuthInfoSerializable
 import com.emarc.core.data.dto.requests.EmailRequest
+import com.emarc.core.data.dto.requests.LoginRequest
 import com.emarc.core.data.dto.requests.RegisterRequest
+import com.emarc.core.data.mappers.toDomain
 import com.emarc.core.data.networking.get
 import com.emarc.core.data.networking.post
+import com.emarc.core.domain.auth.AuthInfo
 import com.emarc.core.domain.auth.AuthService
 import com.emarc.core.domain.util.DataError
 import com.emarc.core.domain.util.EmptyResult
+import com.emarc.core.domain.util.Result
+import com.emarc.core.domain.util.map
 import io.ktor.client.HttpClient
 
 class KtorAuthService(
     private val httpClient: HttpClient
 ): AuthService {
+
+    override suspend fun login(
+        email: String,
+        password: String
+    ): Result<AuthInfo, DataError.Remote> {
+        return httpClient.post<LoginRequest, AuthInfoSerializable>(
+            route = "/auth/login",
+            body = LoginRequest(
+                email = email,
+                password = password
+            )
+        ).map { authInfoSerializable ->
+            authInfoSerializable.toDomain()
+        }
+    }
 
     override suspend fun register(
         email: String,
