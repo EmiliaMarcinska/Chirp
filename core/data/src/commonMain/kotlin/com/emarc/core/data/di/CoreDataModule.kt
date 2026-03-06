@@ -19,6 +19,7 @@ val coreDataModule = module {
     single < ChirpLogger> { KermitLogger }
     single {
         HttpClientFactory(
+            get(),
             get()
         ).create(get())
     }
