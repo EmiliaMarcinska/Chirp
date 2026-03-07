@@ -10,6 +10,7 @@ import com.emarc.chat.presentation.chat_list.ChatListRoute
 import com.emarc.chirp.navigation.DeepLinkListener
 import com.emarc.chirp.navigation.NavigationRoot
 import com.emarc.core.designsystem.theme.ChirpTheme
+import com.emarc.core.presentation.util.ObserveAsEvents
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -30,6 +31,17 @@ fun App(
         }
     }
 
+    ObserveAsEvents(viewModel.events) { event ->
+        when (event) {
+            is MainEvent.OnSessionExpired -> {
+                navController.navigate(AuthGraphRoutes.Graph){
+                    popUpTo(AuthGraphRoutes.Graph) {
+                        inclusive = false
+                    }
+                }
+            }
+        }
+    }
 
     ChirpTheme {
         if(!state.isCheckingAuth) {
