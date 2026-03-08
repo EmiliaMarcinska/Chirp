@@ -7,10 +7,10 @@ sealed interface AuthGraphRoutes {
     data object Graph: AuthGraphRoutes
 
     @Serializable
-    data object Register: AuthGraphRoutes
+    data object Login: AuthGraphRoutes
 
     @Serializable
-    data object Login: AuthGraphRoutes
+    data object Register: AuthGraphRoutes
 
     @Serializable
     data class RegisterSuccess(val email: String): AuthGraphRoutes
@@ -19,7 +19,7 @@ sealed interface AuthGraphRoutes {
     data object ForgotPassword: AuthGraphRoutes
 
     @Serializable
-    data object ResetPassword: AuthGraphRoutes
+    data class ResetPassword(val token: String): AuthGraphRoutes
 
     @Serializable
     data class EmailVerification(val token: String): AuthGraphRoutes

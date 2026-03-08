@@ -1,6 +1,7 @@
 package com.emarc.core.data.auth
 
 import com.emarc.core.data.dto.AuthInfoSerializable
+import com.emarc.core.data.dto.ResetPasswordRequest
 import com.emarc.core.data.dto.requests.EmailRequest
 import com.emarc.core.data.dto.requests.LoginRequest
 import com.emarc.core.data.dto.requests.RegisterRequest
@@ -67,6 +68,19 @@ class KtorAuthService(
         return httpClient.post<EmailRequest, Unit>(
             route = "/auth/forgot-password",
             body = EmailRequest(email)
+        )
+    }
+
+    override suspend fun resetPassword(
+        newPassword: String,
+        token: String
+    ): EmptyResult<DataError.Remote> {
+        return httpClient.post(
+            route = "/auth/reset-password",
+            body = ResetPasswordRequest(
+                newPassword = newPassword,
+                token = token
+            )
         )
     }
 }

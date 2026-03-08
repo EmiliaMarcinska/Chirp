@@ -10,6 +10,7 @@ import com.emarc.auth.presentation.forgot_password.ForgotPasswordRoot
 import com.emarc.auth.presentation.login.LoginRoot
 import com.emarc.auth.presentation.register.RegisterRoot
 import com.emarc.auth.presentation.register_success.RegisterSuccessRoot
+import com.emarc.auth.presentation.reset_password.ResetPasswordRoot
 
 fun NavGraphBuilder.authGraph(
     navController: NavController,
@@ -89,6 +90,18 @@ fun NavGraphBuilder.authGraph(
         }
         composable<AuthGraphRoutes.ForgotPassword> {
             ForgotPasswordRoot()
+        }
+        composable<AuthGraphRoutes.ResetPassword>(
+            deepLinks = listOf(
+                navDeepLink {
+                    this.uriPattern = "https://chirp.pl-coding.com/api/auth/reset-password?token={token}"
+                },
+                navDeepLink {
+                    this.uriPattern = "chirp://chirp.pl-coding.com/api/auth/reset-password?token={token}"
+                },
+            )
+        ) {
+            ResetPasswordRoot()
         }
     }
 }
