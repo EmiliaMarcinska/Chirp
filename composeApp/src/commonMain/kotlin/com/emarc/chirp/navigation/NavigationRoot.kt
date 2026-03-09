@@ -3,11 +3,10 @@ package com.emarc.chirp.navigation
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import com.emarc.auth.presentation.navigation.AuthGraphRoutes
 import com.emarc.auth.presentation.navigation.authGraph
-import com.emarc.chat.presentation.chat_list.ChatListRoute
-import com.emarc.chat.presentation.chat_list.ChatListScreenRoot
+import com.emarc.chat.presentation.navigation.ChatGraphRoutes
+import com.emarc.chat.presentation.navigation.chatGraph
 
 @Composable
 fun NavigationRoot(
@@ -21,15 +20,15 @@ fun NavigationRoot(
         authGraph(
             navController = navController,
             onLoginSuccess = {
-                navController.navigate(ChatListRoute) {
+                navController.navigate(ChatGraphRoutes.Graph) {
                     popUpTo(AuthGraphRoutes.Graph) {
                         inclusive = true
                     }
                 }
             }
         )
-        composable<ChatListRoute> {
-            ChatListScreenRoot()
-        }
+        chatGraph(
+            navController = navController
+        )
     }
 }
