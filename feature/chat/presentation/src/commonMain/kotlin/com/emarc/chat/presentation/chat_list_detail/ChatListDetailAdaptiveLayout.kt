@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class)
+
 package com.emarc.chat.presentation.chat_list_detail
 
 import androidx.compose.foundation.background
@@ -12,11 +14,8 @@ import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.layout.AnimatedPane
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffold
 import androidx.compose.material3.adaptive.layout.ListDetailPaneScaffoldRole
-import androidx.compose.material3.adaptive.layout.PaneScaffoldDirective
-import androidx.compose.material3.adaptive.layout.ThreePaneScaffoldRole
 import androidx.compose.material3.adaptive.navigation.rememberListDetailPaneScaffoldNavigator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -25,11 +24,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.emarc.chat.presentation.create_chat.CreateChatRoot
 import com.emarc.core.designsystem.theme.extended
+import com.emarc.core.presentation.util.DialogSheetScopedViewModel
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ChatListDetailAdaptiveLayout(
     chatListDetailViewModel: ChatListDetailViewModel = koinViewModel()
@@ -50,8 +50,7 @@ fun ChatListDetailAdaptiveLayout(
     ListDetailPaneScaffold(
         directive = scaffoldDirective,
         value = scaffoldNavigator.scaffoldValue,
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.extended.surfaceLower),
+        modifier = Modifier.background(MaterialTheme.colorScheme.extended.surfaceLower),
         listPane = {
             AnimatedPane {
                 LazyColumn(
@@ -63,6 +62,7 @@ fun ChatListDetailAdaptiveLayout(
                             text = "Chat $chatIndex",
                             modifier = Modifier
                                 .clickable {
+                                    chatListDetailViewModel.onAction(ChatListDetailAction.OnCreateChatClick)
                                     chatListDetailViewModel.onAction(ChatListDetailAction.OnChatClick(chatIndex.toString()))
                                     scope.launch {
                                         scaffoldNavigator.navigateTo(
@@ -92,4 +92,10 @@ fun ChatListDetailAdaptiveLayout(
             }
         }
     )
+
+    DialogSheetScopedViewModel(
+        visible = sharedState.dialogState is DialogState.CreateChat
+    ) {
+        CreateChatRoot()
+    }
 }
