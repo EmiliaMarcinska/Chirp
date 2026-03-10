@@ -1,6 +1,7 @@
 package com.emarc.chirp.di
 
 import com.emarc.auth.presentation.di.authPresentationModule
+import com.emarc.chat.data.di.chatDataModule
 import com.emarc.chat.presentation.di.chatPresentationModule
 import com.emarc.core.data.di.coreDataModule
 import com.emarc.core.presentation.di.corePresentationModule
@@ -15,7 +16,8 @@ fun initKoin(config: KoinAppDeclaration? = null) {
             authPresentationModule,
             appModule,
             corePresentationModule,
-            chatPresentationModule
+            chatPresentationModule,
+            chatDataModule
         )
     }
 }
