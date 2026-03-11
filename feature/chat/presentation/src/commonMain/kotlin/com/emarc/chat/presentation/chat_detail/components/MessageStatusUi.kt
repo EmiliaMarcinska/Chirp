@@ -1,4 +1,4 @@
-package com.emarc.chat.presentation.chat_list_detail.components
+package com.emarc.chat.presentation.chat_detail.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

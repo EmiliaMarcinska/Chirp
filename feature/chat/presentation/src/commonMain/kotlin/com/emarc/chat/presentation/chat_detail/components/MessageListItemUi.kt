@@ -1,4 +1,4 @@
-package com.emarc.chat.presentation.chat_list_detail.components
+package com.emarc.chat.presentation.chat_detail.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -13,8 +13,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.emarc.chat.domain.models.ChatMessageDeliveryStatus
-import com.emarc.chat.domain.models.ChatParticipant
 import com.emarc.chat.presentation.model.MessageUi
+import com.emarc.chat.presentation.util.getChatBubbleColorForUser
 import com.emarc.core.designsystem.components.avatar.ChatParticipantUi
 import com.emarc.core.designsystem.theme.ChirpTheme
 import com.emarc.core.designsystem.theme.extended
@@ -51,7 +51,8 @@ fun MessageListItemUi(
             }
             is MessageUi.OtherUserMessage -> {
                 OtherUserMessage(
-                    message = messageUi
+                    message = messageUi,
+                    color = getChatBubbleColorForUser(messageUi.sender.id)
                 )
             }
         }
