@@ -56,4 +56,54 @@ interface ChatDao {
     @Query("SELECT * FROM chatentity WHERE chatId = :chatId")
     fun getChatInfoById(chatId: String): Flow<ChatInfoEntity?>
 
+    @Transaction
+    suspend fun upsertChatWithParticipantsAndCrossRefs(
+        chat: ChatEntity,
+        participants: List<ChatParticipantEntity>,
+        participantDao: ChatParticipantDao,
+        crossRefDao: ChatParticipantsCrossRefDao
+    ) {
+        upsertChat(chat)
+        participantDao.upsertParticipants(participants)
+
+        val crossRefs = participants.map {
+            ChatParticipantCrossRef(
+                chatId = chat.chatId,
+                userId = it.userId,
+                isActive = true
+            )
+        }
+        crossRefDao.upsertCrossRefs(crossRefs)
+        crossRefDao.syncChatParticipants(chat.chatId, participants)
+    }
+
+    @Transaction
+    suspend fun upsertChatsWithParticipantsAndCrossRefs(
+        chats: List<ChatWithParticipants>,
+        participantDao: ChatParticipantDao,
+        crossRefDao: ChatParticipantsCrossRefDao
+    ) {
+        upsertChats(chats.map { it.chat })
+
+        val allParticipants = chats.flatMap { it.participants }
+        participantDao.upsertParticipants(allParticipants)
+
+        val allCrossRefs = chats.flatMap { chatWithParticipants ->
+            chatWithParticipants.participants.map { participant ->
+                ChatParticipantCrossRef(
+                    chatId = chatWithParticipants.chat.chatId,
+                    userId = participant.userId,
+                    isActive = true
+                )
+            }
+        }
+        crossRefDao.upsertCrossRefs(allCrossRefs)
+
+        chats.forEach { chat ->
+            crossRefDao.syncChatParticipants(
+                chatId = chat.chat.chatId,
+                participants = chat.participants
+            )
+        }
+    }
 }
