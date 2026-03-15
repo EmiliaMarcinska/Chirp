@@ -5,6 +5,7 @@ import com.emarc.chat.data.dto.request.CreateChatRequest
 import com.emarc.chat.data.mappers.toDomain
 import com.emarc.chat.domain.chat.ChatService
 import com.emarc.chat.domain.models.Chat
+import com.emarc.core.data.networking.get
 import com.emarc.core.data.networking.post
 import com.emarc.core.domain.util.DataError
 import com.emarc.core.domain.util.Result
@@ -22,5 +23,13 @@ class KtorChatService(
                 otherUserIds = otherUserIds
             )
         ).map { it.toDomain() }
+    }
+
+    override suspend fun getChats(): Result<List<Chat>, DataError.Remote> {
+        return httpClient.get<List<ChatDto>>(
+            route = "/chat"
+        ).map { chatDtos ->
+            chatDtos.map { it.toDomain() }
+        }
     }
 }
