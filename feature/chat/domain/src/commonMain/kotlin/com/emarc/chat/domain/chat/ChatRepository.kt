@@ -2,6 +2,7 @@ package com.emarc.chat.domain.chat
 
 import com.emarc.chat.domain.models.Chat
 import com.emarc.chat.domain.models.ChatInfo
+import com.emarc.chat.domain.models.ChatParticipant
 import com.emarc.core.domain.util.DataError
 import com.emarc.core.domain.util.EmptyResult
 import com.emarc.core.domain.util.Result
@@ -14,4 +15,9 @@ interface ChatRepository {
     suspend fun fetchChatById(chatId: String): EmptyResult<DataError.Remote>
     suspend fun createChat(otherUserIds: List<String>): Result<Chat, DataError.Remote>
     suspend fun leaveChat(chatId: String): EmptyResult<DataError.Remote>
-}
+    suspend fun addParticipantsToChat(
+        chatId: String,
+        userIds: List<String>
+    ): Result<Chat, DataError.Remote>
+
+    fun getActiveParticipantsByChatId(chatId: String): Flow<List<ChatParticipant>>}
