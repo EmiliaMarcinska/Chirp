@@ -41,8 +41,10 @@ fun ChatItemHeaderRow(
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
-                text = if(!isGroupChat) {
-                    chat.otherParticipants.first().username
+                text = if (!isGroupChat) {
+                    if (chat.otherParticipants.size == 1)
+                        chat.otherParticipants.first().username
+                    else "pusto"
                 } else {
                     stringResource(Res.string.group_chat)
                 },
@@ -52,7 +54,7 @@ fun ChatItemHeaderRow(
                 maxLines = 1,
                 modifier = Modifier.fillMaxWidth()
             )
-            if(isGroupChat) {
+            if (isGroupChat) {
                 val you = stringResource(Res.string.you)
                 val formattedUsernames = remember(chat.otherParticipants) {
                     "$you, " + chat.otherParticipants.joinToString {

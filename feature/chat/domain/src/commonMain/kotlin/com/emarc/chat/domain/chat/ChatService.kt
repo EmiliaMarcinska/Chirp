@@ -2,6 +2,7 @@ package com.emarc.chat.domain.chat
 
 import com.emarc.chat.domain.models.Chat
 import com.emarc.core.domain.util.DataError
+import com.emarc.core.domain.util.EmptyResult
 import com.emarc.core.domain.util.Result
 
 interface ChatService {
@@ -12,4 +13,5 @@ interface ChatService {
     suspend fun getChats(): Result<List<Chat>, DataError.Remote>
 
     suspend fun getChatById(chatId: String): Result<Chat, DataError.Remote>
+    suspend fun leaveChat(chatId: String): EmptyResult<DataError.Remote>
 }
