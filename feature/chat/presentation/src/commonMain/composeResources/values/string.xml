@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8" ?>
 <resources>
     <string name="create_chat">Create Chat</string>
     <string name="add">Add</string>
@@ -12,6 +11,7 @@
     <string name="sent">Sent</string>
     <string name="retry">Retry</string>
     <string name="failed">Failed</string>
+    <string name="save">Save</string>
     <string name="open_chat_options_menu">Open chat options menu</string>
     <string name="chat_members">Chat members</string>
     <string name="leave_chat">Leave chat</string>
