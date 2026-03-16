@@ -1,5 +1,6 @@
 package com.emarc.chat.data.chat
 
+import com.emarc.chat.data.lifecycle.AppLifecycleObserver
 import com.emarc.chat.data.mappers.toDomain
 import com.emarc.chat.data.mappers.toEntity
 import com.emarc.chat.data.mappers.toLastMessageView
@@ -17,18 +18,30 @@ import com.emarc.core.domain.util.EmptyResult
 import com.emarc.core.domain.util.Result
 import com.emarc.core.domain.util.asEmptyResult
 import com.emarc.core.domain.util.onSuccess
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.supervisorScope
 
+@OptIn(DelicateCoroutinesApi::class)
 class OfflineFirstChatRepository(
     private val chatService: ChatService,
-    private val db: ChirpChatDatabase
+    private val db: ChirpChatDatabase,
+    private val observer: AppLifecycleObserver
 ): ChatRepository {
+
+    init {
+        observer.isInForeground.onEach { isInForeground ->
+            println("Is app in foreground? $isInForeground")
+        }.launchIn(GlobalScope)
+    }
 
     override fun getChats(): Flow<List<Chat>> {
         return db.chatDao.getChatsWithParticipants()
