@@ -8,4 +8,5 @@ import org.koin.dsl.module
 actual val platformChatDataModule = module {
     single { DatabaseFactory() }
     singleOf(::AppLifecycleObserver)
+    singleOf(::ConnectivityObserver)
 }
