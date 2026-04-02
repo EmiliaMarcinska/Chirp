@@ -40,8 +40,6 @@ interface ChatMessageDao {
 
     @Query("SELECT * FROM chatmessageentity WHERE messageId = :messageId")
     suspend fun getMessageById(messageId: String): ChatMessageEntity?
-<<<<<<< Updated upstream
-=======
 
     @Query(
         """
@@ -82,5 +80,4 @@ interface ChatMessageDao {
         val messageIds = messagesToDelete.map { it.messageId }
         deleteMessagesById(messageIds)
     }
->>>>>>> Stashed changes
 }

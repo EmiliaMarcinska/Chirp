@@ -4,24 +4,19 @@ import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.emarc.chat.data.chat.KtorChatParticipantService
 import com.emarc.chat.data.chat.KtorChatService
 import com.emarc.chat.data.chat.OfflineFirstChatRepository
-<<<<<<< Updated upstream
-=======
 import com.emarc.chat.data.chat.WebSocketChatConnectionClient
 import com.emarc.chat.data.message.KtorChatMessageService
 import com.emarc.chat.data.message.OfflineFirstMessageRepository
 import com.emarc.chat.data.network.ConnectionRetryHandler
 import com.emarc.chat.data.network.KtorWebSocketConnector
->>>>>>> Stashed changes
 import com.emarc.chat.database.DatabaseFactory
+import com.emarc.chat.domain.chat.ChatConnectionClient
 import com.emarc.chat.domain.chat.ChatParticipantService
 import com.emarc.chat.domain.chat.ChatRepository
 import com.emarc.chat.domain.chat.ChatService
-<<<<<<< Updated upstream
-=======
-import com.emarc.chat.domain.message.ChatMessageService
 import com.emarc.chat.domain.message.MessageRepository
 import kotlinx.serialization.json.Json
->>>>>>> Stashed changes
+import com.emarc.chat.domain.message.ChatMessageService
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -35,8 +30,6 @@ val chatDataModule = module {
     singleOf(::KtorChatParticipantService) bind ChatParticipantService::class
     singleOf(::KtorChatService) bind ChatService::class
     singleOf(::OfflineFirstChatRepository) bind ChatRepository::class
-<<<<<<< Updated upstream
-=======
     singleOf(::OfflineFirstMessageRepository) bind MessageRepository::class
     singleOf(::WebSocketChatConnectionClient) bind ChatConnectionClient::class
     singleOf(::ConnectionRetryHandler)
@@ -47,7 +40,6 @@ val chatDataModule = module {
             ignoreUnknownKeys = true
         }
     }
->>>>>>> Stashed changes
     single {
         get<DatabaseFactory>()
             .create()

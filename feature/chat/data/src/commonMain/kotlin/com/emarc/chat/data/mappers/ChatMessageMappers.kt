@@ -1,6 +1,8 @@
 package com.emarc.chat.data.mappers
 
 import com.emarc.chat.data.dto.ChatMessageDto
+import com.emarc.chat.data.dto.websocket.IncomingWebSocketDto
+import com.emarc.chat.data.dto.websocket.OutgoingWebSocketDto
 import com.emarc.chat.database.entities.ChatMessageEntity
 import com.emarc.chat.database.view.LastMessageView
 import com.emarc.chat.domain.models.ChatMessage
@@ -59,5 +61,25 @@ fun ChatMessage.toLastMessageView(): LastMessageView {
         content = content,
         timestamp = createdAt.toEpochMilliseconds(),
         deliveryStatus = deliveryStatus.name
+    )
+}
+
+
+fun ChatMessage.toNewMessage(): OutgoingWebSocketDto.NewMessage {
+    return OutgoingWebSocketDto.NewMessage(
+        messageId = id,
+        chatId = chatId,
+        content = content,
+    )
+}
+
+fun IncomingWebSocketDto.NewMessageDto.toEntity(): ChatMessageEntity {
+    return ChatMessageEntity(
+        messageId = id,
+        chatId = chatId,
+        senderId = senderId,
+        content = content,
+        timestamp = Instant.parse(createdAt).toEpochMilliseconds(),
+        deliveryStatus = ChatMessageDeliveryStatus.SENT.name
     )
 }

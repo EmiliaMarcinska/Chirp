@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
+
 plugins {
     alias(libs.plugins.convention.kmp.library)
     alias(libs.plugins.convention.buildkonfig)
@@ -28,6 +30,7 @@ kotlin {
         androidMain {
             dependencies {
                 implementation(libs.koin.android)
+                implementation(libs.androidx.lifecycle.process)
                 // Add Android-specific dependencies here. Note that this source set depends on
                 // commonMain by default and will correctly pull the Android artifacts of any KMP
                 // dependencies declared in commonMain.
@@ -45,4 +48,14 @@ kotlin {
         }
     }
 
+
+    targets.withType<KotlinNativeTarget> {
+        compilations.getByName("main") {
+            cinterops {
+                create("network") {
+                    defFile(file("src/nativeInterop/cinterop/network.def"))
+                }
+            }
+        }
+    }
 }
