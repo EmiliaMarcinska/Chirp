@@ -1,14 +1,16 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, ExperimentalUuidApi::class)
 
 package com.emarc.chat.presentation.chat_detail
 
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.emarc.chat.domain.chat.ChatConnectionClient
 import com.emarc.chat.domain.chat.ChatRepository
 import com.emarc.chat.domain.message.MessageRepository
 import com.emarc.chat.domain.models.ConnectionState
+import com.emarc.chat.domain.models.OutgoingNewMessage
 import com.emarc.chat.presentation.mappers.toUi
 import com.emarc.core.domain.auth.SessionStorage
 import com.emarc.core.domain.util.onFailure
@@ -30,6 +32,8 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class ChatDetailViewModel(
     private val chatRepository: ChatRepository,
@@ -45,6 +49,7 @@ class ChatDetailViewModel(
 
     private var hasLoadedInitialData = false
 
+
     private val chatInfoFlow = _chatId
         .flatMapLatest { chatId ->
             if(chatId != null) {
@@ -53,6 +58,13 @@ class ChatDetailViewModel(
         }
 
     private val _state = MutableStateFlow(ChatDetailState())
+
+    private val canSendMessage = snapshotFlow { _state.value.messageTextFieldState.text.toString() }
+        .map { it.isBlank() }
+        .combine(connectionClient.connectionState) { isMessageBlank, connectionState ->
+            !isMessageBlank && connectionState == ConnectionState.CONNECTED
+        }
+
 
     private val stateWithMessages = combine(
         _state,
@@ -80,6 +92,7 @@ class ChatDetailViewModel(
             if (!hasLoadedInitialData) {
                 observeConnectionState()
                 observeChatMessages()
+                observeCanSendMessage()
                 hasLoadedInitialData = true
             }
         }
@@ -102,9 +115,42 @@ class ChatDetailViewModel(
             is ChatDetailAction.OnMessageLongClick -> {}
             is ChatDetailAction.OnRetryClick -> {}
             ChatDetailAction.OnScrollToTop -> {}
-            ChatDetailAction.OnSendMessageClick -> {}
+            ChatDetailAction.OnSendMessageClick -> sendMessage()
             else -> Unit
         }
+    }
+
+    private fun sendMessage() {
+        val currentChatId = _chatId.value
+        val content = state.value.messageTextFieldState.text.toString().trim()
+        if(content.isBlank() || currentChatId == null) {
+            return
+        }
+
+        viewModelScope.launch {
+            val message = OutgoingNewMessage(
+                chatId = currentChatId,
+                messageId = Uuid.random().toString(),
+                content = content
+            )
+
+            messageRepository
+                .sendMessage(message)
+                .onSuccess {
+                    state.value.messageTextFieldState.clearText()
+                }
+                .onFailure { error ->
+                    eventChannel.send(ChatDetailEvent.OnError(error.toUiText()))
+                }
+        }
+    }
+
+    private fun observeCanSendMessage() {
+        canSendMessage.onEach { canSend ->
+            _state.update { it.copy(
+                canSendMessage = canSend
+            ) }
+        }.launchIn(viewModelScope)
     }
 
     private fun observeChatMessages() {

@@ -3,6 +3,7 @@ package com.emarc.chat.domain.message
 import com.emarc.chat.domain.models.ChatMessage
 import com.emarc.chat.domain.models.ChatMessageDeliveryStatus
 import com.emarc.chat.domain.models.MessageWithSender
+import com.emarc.chat.domain.models.OutgoingNewMessage
 import com.emarc.core.domain.util.DataError
 import com.emarc.core.domain.util.EmptyResult
 import com.emarc.core.domain.util.Result
@@ -19,5 +20,6 @@ interface MessageRepository {
         before: String? = null
     ): Result<List<ChatMessage>, DataError>
 
+    suspend fun sendMessage(message: OutgoingNewMessage): EmptyResult<DataError>
     fun getMessagesForChat(chatId: String): Flow<List<MessageWithSender>>
 }

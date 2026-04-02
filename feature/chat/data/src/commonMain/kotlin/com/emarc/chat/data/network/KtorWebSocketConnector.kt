@@ -2,11 +2,11 @@ package com.emarc.chat.data.network
 
 import com.emarc.chat.data.dto.websocket.WebSocketMessageDto
 import com.emarc.chat.data.lifecycle.AppLifecycleObserver
-import com.emarc.chat.domain.error.ConnectionError
 import com.emarc.chat.domain.models.ConnectionState
 import com.emarc.core.data.networking.UrlConstants
 import com.emarc.core.domain.auth.SessionStorage
 import com.emarc.core.domain.logging.ChirpLogger
+import com.emarc.core.domain.util.DataError
 import com.emarc.core.domain.util.EmptyResult
 import com.emarc.core.domain.util.Result
 import com.emarc.feature.chat.data.BuildKonfig
@@ -213,11 +213,11 @@ class KtorWebSocketConnector (
         }
     }
 
-    suspend fun sendMessage(message: String): EmptyResult<ConnectionError> {
+    suspend fun sendMessage(message: String): EmptyResult<DataError.Connection> {
         val connectionState = connectionState.value
 
         if(currentSession == null || connectionState != ConnectionState.CONNECTED) {
-            return Result.Failure(ConnectionError.NOT_CONNECTED)
+            return Result.Failure(DataError.Connection.NOT_CONNECTED)
         }
 
         return try {
@@ -226,7 +226,7 @@ class KtorWebSocketConnector (
         } catch(e: Exception) {
             coroutineContext.ensureActive()
             logger.error("Unable to send WebSocket message", e)
-            Result.Failure(ConnectionError.MESSAGE_SEND_FAILED)
+            Result.Failure(DataError.Connection.MESSAGE_SEND_FAILED)
         }
     }
 
