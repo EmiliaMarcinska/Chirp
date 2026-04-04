@@ -4,8 +4,10 @@ import com.emarc.chat.data.dto.ChatMessageDto
 import com.emarc.chat.data.mappers.toDomain
 import com.emarc.chat.domain.message.ChatMessageService
 import com.emarc.chat.domain.models.ChatMessage
+import com.emarc.core.data.networking.delete
 import com.emarc.core.data.networking.get
 import com.emarc.core.domain.util.DataError
+import com.emarc.core.domain.util.EmptyResult
 import com.emarc.core.domain.util.Result
 import com.emarc.core.domain.util.map
 import io.ktor.client.HttpClient
@@ -27,5 +29,11 @@ class KtorChatMessageService(
                 }
             }
         ).map { it.map { it.toDomain() } }
+    }
+
+    override suspend fun deleteMessage(messageId: String): EmptyResult<DataError.Remote> {
+        return httpClient.delete(
+            route = "/messages/$messageId"
+        )
     }
 }
