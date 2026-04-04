@@ -9,11 +9,14 @@ import androidx.lifecycle.viewModelScope
 import com.emarc.chat.domain.chat.ChatConnectionClient
 import com.emarc.chat.domain.chat.ChatRepository
 import com.emarc.chat.domain.message.MessageRepository
+import com.emarc.chat.domain.models.ChatMessage
 import com.emarc.chat.domain.models.ConnectionState
 import com.emarc.chat.domain.models.OutgoingNewMessage
 import com.emarc.chat.presentation.mappers.toUi
 import com.emarc.chat.presentation.model.MessageUi
 import com.emarc.core.domain.auth.SessionStorage
+import com.emarc.core.domain.util.DataErrorException
+import com.emarc.core.domain.util.Paginator
 import com.emarc.core.domain.util.onFailure
 import com.emarc.core.domain.util.onSuccess
 import com.emarc.core.presentation.util.toUiText
@@ -50,8 +53,16 @@ class ChatDetailViewModel(
 
     private var hasLoadedInitialData = false
 
+    private var currentPaginator: Paginator<String?, ChatMessage>? = null
 
     private val chatInfoFlow = _chatId
+        .onEach { chatId ->
+            if(chatId != null) {
+                setupPaginatorForChat(chatId)
+            } else {
+                currentPaginator = null
+            }
+        }
         .flatMapLatest { chatId ->
             if (chatId != null) {
                 chatRepository.getChatInfoById(chatId)
@@ -234,6 +245,44 @@ class ChatDetailViewModel(
                 }
             }
             .launchIn(viewModelScope)
+    }
+
+    private fun setupPaginatorForChat(chatId: String) {
+        currentPaginator = Paginator(
+            initialKey = null,
+            onLoadUpdated = { isLoading ->
+                _state.update { it.copy(isPaginationLoading = isLoading) }
+            },
+            onRequest = { beforeTimestamp ->
+                messageRepository.fetchMessages(chatId, beforeTimestamp)
+            },
+            getNextKey = { messages ->
+                messages.minOfOrNull { it.createdAt }?.toString()
+            },
+            onError = { throwable ->
+                if (throwable is DataErrorException) {
+                    eventChannel.send(
+                        ChatDetailEvent.OnError(throwable.error.toUiText())
+                    )
+                }
+            },
+            onSuccess = { messages, _ ->
+                _state.update {
+                    it.copy(
+                        endReached = messages.isEmpty()
+                    )
+                }
+            }
+        )
+
+        _state.update { it.copy(
+            endReached = false,
+            isPaginationLoading = false,
+        ) }
+
+        viewModelScope.launch {
+            currentPaginator?.loadNextItems()
+        }
     }
 
     private fun onLeaveChatClick() {
