@@ -24,12 +24,12 @@ fun ChatMessageDto.toDomain(): ChatMessage {
 
 fun ChatMessageEntity.toDomain(): ChatMessage {
     return ChatMessage(
-        id = chatId,
+        id = messageId,
         chatId = chatId,
         content = content,
         createdAt = Instant.fromEpochMilliseconds(timestamp),
         senderId = senderId,
-        deliveryStatus = ChatMessageDeliveryStatus.SENT
+        deliveryStatus = ChatMessageDeliveryStatus.valueOf(deliveryStatus)
     )
 }
 
@@ -65,7 +65,6 @@ fun ChatMessage.toLastMessageView(): LastMessageView {
         deliveryStatus = deliveryStatus.name
     )
 }
-
 
 fun ChatMessage.toNewMessage(): OutgoingWebSocketDto.NewMessage {
     return OutgoingWebSocketDto.NewMessage(
