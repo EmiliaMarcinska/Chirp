@@ -4,6 +4,12 @@ import com.emarc.chat.domain.models.MessageWithSender
 import com.emarc.chat.presentation.model.MessageUi
 import com.emarc.chat.presentation.util.DateUtils
 
+fun List<MessageWithSender>.toUiList(localUserId: String): List<MessageUi> {
+    return this
+        .sortedByDescending { it.message.createdAt }
+        .map { it.toUi(localUserId) }
+}
+
 fun MessageWithSender.toUi(
     localUserId: String,
 ): MessageUi {
